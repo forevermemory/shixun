@@ -1,0 +1,67 @@
+.login {
+    background: url("/static/img/loginBgImg.png") no-repeat center center;
+    width:100%;
+    background-size:cover;
+    /* filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/static/img/loginBgImg.png',sizingMethod='scale'); */
+    position: relative;
+}
+
+.login .cell {
+    display: inline-block;
+    height: 350px;
+    width: 450px;
+    border: 1px solid #eee;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: -175px;
+    margin-left: -225px;
+    color: #fff;
+}
+
+.login .header {
+    text-align: center;
+    padding: 28px;
+    font-size: 28px;
+}
+
+.login .first, .login .second, .login .third, .login .submit {
+    padding: 15px 0px;
+}
+
+.login .first span, .login .second span {
+    width: 25%;
+    display: inline-block;
+    text-align: right;
+}
+
+.login .first input , .login .second input {
+    width: 60%;
+    height: 25px;
+    line-height: 25px;
+}
+
+/* .login .third input {
+    margin-left: 12%;
+}
+
+.login .third span {
+    margin-left: 18%;
+} */
+.login .third {
+    margin-left: 25%;
+}
+
+.login .submit {
+    text-align: center;
+}
+
+.login .submit input {
+    width: 40%;
+    padding: 5px 0px;
+    background: transparent;
+    font-size: 19px;
+    color: #fff;
+    border: 1px solid #eee;
+    outline: none;
+}

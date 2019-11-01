@@ -1,0 +1,224 @@
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>265 设备</title>
+    <link rel="stylesheet" href="../static/css/reset.css">
+    <link rel="stylesheet" href="../static/css/content.css">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/slider.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.form.js"></script>
+</head>
+
+<body>
+        <div class="progress" style="width: 60%;margin-top: 150px;margin-left: 20%;position: relative; display: none;">
+        <div style="height: 16px;background-color: #dedede;"></div>
+        <div class="bar" style="height: 16px;width:0%;top: 0px;background: #9f7d7d;position: absolute;z-index:10;"></div>
+        <span class="time" style="position: absolute; color: #fff; right: -40px; top: 0px;">0s</span>
+    </div>
+    <div class="uploading" style="display:none;left: 45%; top: 30%; position: absolute; z-index: 100000;">
+        <img src="/static/img/loading.svg" style="width: 70%"/>
+    </div>
+    <div class="upgrate" style="left: 40%; position: absolute; z-index: 100000;"></div>
+</div>
+
+
+    <div class="content" id="content">
+        <div class="header" style="position: relative;height: 95px">
+            <span style="color:red;position: absolute;left: 48.5%;top: 45px;">error</span>
+            <span style="color:green; position: absolute;left: 48.5%;top: 45px;">success</span>
+            <a href="/signout" class="signout">退出</a>
+            <form action="/reboot" method="post">
+                <input type="submit" value="重启" style="">
+            </form>
+        </div>
+        <div class="main">
+            <div class="menu">
+                <ul>
+                    <li class="active">
+                        <a href="#">
+                            编解码器<p>配置参数</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            v35协转<p>配置参数</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            升<span style="visibility: hidden;">升级</span>级<p>固件升级</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            系<span style="visibility: hidden;">升级</span>统<p>系统重启</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!--  -->
+ <div id="version">
+                <div>
+                    <h3>设备状态</h3>
+                    <ul>
+                        <li >
+                            <a href="#">网络</a>
+                        </li>
+                        <li class="active">
+                            <a href="#">音频</a>
+                        </li>
+                        <li >
+                            <a href="#">视频</a>
+                        </li>
+                        <li >
+                            <a href="#">诊断</a>
+                        </li>
+                        <li>
+                            <a href="#">版本</a>
+                        </li>
+                        <li>
+                            <a href="#">字幕</a>
+                        </li>
+                    </ul>
+                    <form action="/config/video" method="post">
+                        <div class="well video">
+                            <div class="input white" style="height: 30px;">
+                                <span>调音增益:</span>
+                                <input type="text" name="sound_gain" id="" value="0"  style="width: 25%"> 
+                                <input type="submit" onClick="removeDisabled()" class="btn" value="修改"> db(0~16)
+                            </div>
+
+                            <div class="input white" style="height: 30px;">
+                                <span>麦克增益:</span>
+                                <input type="text" name="mac_gain" id="" value="0"  style="width: 25%"> 
+                                <input type="submit" onClick="removeDisabled()" class="btn" value="修改"> db(0~16)
+                            </div> 
+
+                            <div class="input white" style="height: 30px;">
+                                <span>音量控制:</span>
+                                <input type="text" name="volume" id="" value="0"  style="width: 25%"> 
+                                <input type="submit" onClick="removeDisabled()" class="btn" value="修改"> db(0~32)
+                            </div> 
+
+                            <div class="input" style="height: 30px;">
+                                <span>AAC类别:</span>
+                                <input type="radio" name="aac_type" id="" value="0"> <label class="white">AAC-LC</label>
+                                <input type="radio" name="aac_type" id="" value="1"> <label class="white">HE-AAC</label>
+                            </div> 
+
+                            <div class="input acc" style="height: 30px;">
+                                <span style="font-size: 14px;">AAC-LC采样率:</span>
+                                   <select id="" name="aac_bit_rate" style="width: 8%">
+                                        <option value="0">16K</option>
+                                        <option value="1">32K</option>
+                                    </select>
+
+                                <span>AAC-LC码率:</span>
+                                   <select id="" name="aac_bit_rate" style="width: 8%">
+                                        <option value="0">16K</option>
+                                        <option value="1">32K</option>
+                                    </select>
+
+                                <span>AAC-LC封装:</span>
+                                   <select id="" name="aac_bit_rate" style="width: 8%">
+                                        <option value="0">ADTS</option>
+                                        <option value="1">32K</option>
+                                    </select>
+                            </div> 
+                <div class="" id="networkShowSendInfo">
+                        <div class="input" style="padding: 0">
+                            <div class="ping" ><span>发送包:&nbsp;&nbsp;</span><span style="text-align: left;">0</span></div>
+                            <div class="ping" ><span>接受包:&nbsp;&nbsp;</span> <span style="text-align: left;">0</span> </div>
+                        </div>    
+                        <div class="input" style="padding: 0">
+                            <div class="ping"><span>发送包:&nbsp;&nbsp;</span><span style="text-align: left;">0</span></div>
+                            <div class="ping"><span>接受包:&nbsp;&nbsp;</span> <span style="text-align: left;">0</span> </div>
+                        </div>    
+                        <div class="input" style="padding: 0">
+                            <div class="ping"><span>发送包:&nbsp;&nbsp;</span><span style="text-align: left;">0</span></div>
+                            <div class="ping"><span>接受包:&nbsp;&nbsp;</span> <span style="text-align: left;">0</span> </div>
+                        </div>    
+                        <div class="input" style="padding: 0">
+                            <div class="ping"><span>发送包:&nbsp;&nbsp;</span><span style="text-align: left;">0</span></div>
+                            <div class="ping"><span>接受包:&nbsp;&nbsp;</span> <span style="text-align: left;">0</span> </div>
+                        </div>    
+                </div>
+                            <input type="submit" onClick="removeDisabled()" class="btn ml35" value="修改">
+           
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!--  -->
+            <script>
+            </script>
+        </div>
+    </div>
+    <script>
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+        $('.pure-menu').click(function() {
+            $('.k-config-submenu').css({
+                'display': 'none'
+            })
+            $('.pure-menu').removeClass('active')
+            $('.pure-menu').removeClass('in');
+            $(this).addClass('active')
+            $(this).siblings('ul').css('display', 'block')
+        })
+        $('.pure-menu').each(function() {
+            if ($(this).attr('href') == window.location.pathname) {
+                $(this).addClass('active')
+            }
+        });
+        $('.k-config-submenu li a').each(function() {
+            if ($(this).attr('href') == window.location.pathname) {
+                $('.k-config-submenu li a').removeClass('in');
+                $(this).addClass('in');
+                $(this).parents('.k-config-submenu').css('display', 'block');
+                $(this).parents('.pure-menu-list').siblings('.pure-menu').addClass('active')
+            }
+        });
+        var getDOM = function(id) {
+            return document.getElementById(id)
+        }
+        var sheight = document.documentElement.clientHeight || document.body.clientHeight
+        window.onresize = function() {
+            getDOM('content').style.height = sheight + 'px'
+        }
+        getDOM('content').style.height = sheight + 'px'
+    </script>
+</body>
+
+</html>
+
+
+    <div class="progress" style="width: 60%;margin-top: 150px;margin-left: 20%;position: relative; display: none;">
+        <div style="height: 16px;background-color: #dedede;"></div>
+        <div class="bar" style="height: 16px;width:0%;top: 0px;background: #9f7d7d;position: absolute;z-index:10;"></div>
+        <span class="time" style="position: absolute; color: #fff; right: -40px; top: 0px;">0s</span>
+    </div>
+    <div class="uploading" style="display:none;left: 45%; top: 30%; position: absolute; z-index: 100000;">
+        <img src="../static/img/loading.svg" style="width: 70%"/>
+    </div>
+    <div class="upgrate" style="left: 40%; position: absolute; z-index: 100000;"></div>
+</div>
+<script>
+    $('.progress').css('display', 'block')
+    var w = 0;
+    var timer = setInterval(function(){
+        w = w + (3* 1)
+        $(".bar").css("width", (w + "%"))
+        $(".time").text((w/3) + "s")
+        if(w > 90) {
+            clearInterval(timer)
+            window.location.href="/upgrade"
+        }
+    },1000)
+    $('.upgrate').prepend('<span style="color:white;">升级成功，请等待设备自动重启</span>')
+</script>
