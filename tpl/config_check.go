@@ -69,7 +69,7 @@ var timeInter = {}
 checkAudioOrLoopBtnValue()
 
 
-// 测试还回
+// 测试还回  0停止 1远端环回 3本地还回
 function checkLoop(event) {  
     emptyAlertMsg()
     if($(event).hasClass('disabled')){
@@ -78,11 +78,12 @@ function checkLoop(event) {
     $(event).addClass('disabled')
     let data = {}
     let loopOff = $('#onoff_loop').val()
-    // 0 停止 1 开始  
+    // 0停止 1远端环回 3本地还回
     data['onoff_loop'] = loopOff
     if ($(event).val() == '停止'){
-        data['onoff_loop'] = '0'
+        data['onoff_loop'] = 0
     }
+
     $.ajax({
         type: "get",
         url: '/config/check_loop',
@@ -93,6 +94,7 @@ function checkLoop(event) {
             if(res['Code'] == '0'){
                 // 将old更新为当前选中的option
                 $('#onoff_loop_old').val(data['onoff_loop'])
+                 // $('#onoff_loop_old').val() == '1'? $('#onoff_loop_old').val('0'):$('#onoff_loop_old').val('1')
                 if ($(event).val() == '停止'){
                     $(event).val('测试')
                 }else{
@@ -117,9 +119,16 @@ function checkAudio(event) {
     $(event).addClass('disabled')
     let data = {}
     let soundOff = $('#onoff_sound').val()
-    // 0 停止 1 开始   
-    soundOff == '0'? soundOff = '1' : soundOff = '0'
-    data['onoff_sound'] = soundOff
+    // 0 停止 1 开始    点击停止传0 点击测试传1
+    // 是1 的话你的页面应该是停止按钮   
+    // 点击测试传1   再次avc_web_audioLoopGet查询到的还是1
+    // soundOff == '0'? soundOff = '1' : soundOff = '0'
+    if($('#onoff_sound_btn').val() == '停止'){
+        data['onoff_sound'] = 0
+    }else if($('#onoff_sound_btn').val() == '测试'){
+        data['onoff_sound'] = 1
+    }
+    
     $.ajax({
         type: "get",
         url: '/config/check_audio',
@@ -128,7 +137,7 @@ function checkAudio(event) {
             let res = JSON.parse(response)
             $(event).removeClass('disabled')
             if(res['Code'] == '0'){
-                 $('#onoff_sound').val() == '0'? $('#onoff_sound').val('1'):$('#onoff_sound').val('0')
+                 $('#onoff_sound').val() == '1'? $('#onoff_sound').val('0'):$('#onoff_sound').val('1')
                 if ($(event).val() == '停止'){
                     $(event).val('测试')
                 }else{
@@ -223,10 +232,18 @@ function checkAudioOrLoopBtnValue() {
     }else if($('#onoff_sound').val() == '1'){
         $('#onoff_sound_btn').val('停止')
     }
+    // 11.01修改
+    // if($('#onoff_sound').val() == '0'){
+    //     $('#onoff_sound_btn').val('停止')
+    // }else if($('#onoff_sound').val() == '1'){
+    //     $('#onoff_sound_btn').val('测试')
+    // }
 
     if($('#onoff_loop_old').val() == '0'){
         $('#onoff_loop_old_btn').val('测试')
     }else{
+        // 设置option选中
+        $('#onoff_loop').val('{{.OnoffLoop}}')
         $('#onoff_loop_old_btn').val('停止')
     }
 }

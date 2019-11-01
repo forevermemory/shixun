@@ -176,12 +176,19 @@ func main() {
 		checkSignin(w, r)
 		tpl.Render(w, tpl.INDEX, &tpl.Msg{})
 	})
-
 	r.Get("/reboot", func(w http.ResponseWriter, r *http.Request) {
 		checkSignin(w, r)
-		C.avc_web_board_reboot()
-		w.Write([]byte(`{"Code": "0", "Msg": "重启成功"}`))
+		tpl.Render(w, tpl.REBOOT, &tpl.Msg{MemuReboot: true})
 	})
+	r.Get("/reboot_start", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("调用重启接口")
+		C.avc_web_board_reboot()
+		w.Write([]byte(`{"Code": "0"}`))
+	})
+	r.Get("/reboot_end", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{"Code": "0"}`))
+	})
+
 	r.Get("/upgrade", func(w http.ResponseWriter, r *http.Request) {
 		checkSignin(w, r)
 		tpl.Render(w, tpl.UPGRADE, &tpl.Msg{MemuUpgrade: true})

@@ -67,25 +67,11 @@ function emptyAlertMsg() {
 </div>
 
   <script>
-
 function reboot() {  
     var r = confirm("您确认进行系统重启吗!");
     if (r==true){
         // 确认重启
-      $.ajax({
-            type: "get",
-            url: "/reboot",
-            success: function (response) {
-                let res = JSON.parse(response)
-                if(res['Code'] == '0'){
-                    window.location.href = '/signout'
-                }else{
-                    $('#errorMSG').text('重启失败')
-                }
-            },error: function () {
-                $('#errorMSG').text('服务端错误')
-            }
-        });
+        window.location.href = '/reboot'
     }else{
         return false;
     }
