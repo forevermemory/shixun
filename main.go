@@ -224,7 +224,8 @@ func main() {
 			io.Copy(f2, mcuFirmware2)
 			f2.Close()
 			// 直接调用升级的api
-			// C.avc_web_McuUpdate()
+			log.Println("开始升级mcu")
+			C.avc_web_McuUpdate()
 			log.Println("升级mcu成功")
 		}
 		// 有没有md5 没有直接返回错误
@@ -245,27 +246,37 @@ func main() {
 			return
 		}
 		if md5Err == nil {
+			log.Println("md5保存中。。。")
 			f3, _ := os.OpenFile("/tmp/"+md5file.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 			io.Copy(f3, fileMD5)
 			f3.Close()
+			log.Println("md5保存成功")
+
 		}
 		// fileMD5, md5file, md5Err := r.FormFile("file_md5")
 		// v35和系统固件
+		log.Println("v35fErr----", v35fErr)
 		if v35fErr == nil {
+			log.Println("v35保存中。。。")
 			f4, _ := os.OpenFile("/tmp/"+v35f.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 			io.Copy(f4, v35Firmware)
 			f4.Close()
+			log.Println("v35保存成功")
+
 			// 读取文件 和md5 进行校验
 			// TODO
+			log.Println("打开v35")
 			v35fFirData, err := os.Open("/tmp/" + v35f.Filename)
 			if err != nil {
 				upgradeFirmwareError(w)
 			}
 			defer v35fFirData.Close()
 			h := md5.New()
+			log.Println("io.Copy(h, v35fFirData)-----------------")
 			if _, err := io.Copy(h, v35fFirData); err != nil {
 				upgradeFirmwareError(w)
 			}
+			log.Println("read md5")
 			md5Data, err := ioutil.ReadFile("/tmp/" + md5file.Filename)
 			if err != nil {
 				upgradeFirmwareError(w)
@@ -273,19 +284,28 @@ func main() {
 
 			firMd5 := strings.TrimSpace(hex.EncodeToString(h.Sum([]byte(""))))
 			md5Str := strings.Split(string(md5Data), " ")[0]
+			log.Println("v35-------", firMd5)
+			log.Println("md5-------", md5Str)
+			log.Println("是否md5匹配-------", firMd5 == md5Str)
 			if firMd5 == md5Str {
 				log.Println("升级 v35 .........")
-				// C.avc_web_V35Update()
+				C.avc_web_V35Update()
 				log.Println("升级 v35 成功")
 
 			}
 
 		}
+		// fileFirmware, fh, fhErr := r.FormFile("file_firmware")
+
+		log.Println("系统固件err", fhErr)
 		if fhErr == nil {
+			log.Println("save 系统固件...")
 			f5, _ := os.OpenFile("/tmp/"+fh.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 			io.Copy(f5, fileFirmware)
 			f5.Close()
 			// 读取系统固件 和md5 进行校验
+			log.Println("save 系统固件ok")
+			log.Println("open 系统固件")
 			// TODO
 			fhFirData, err := os.Open("/tmp/" + fh.Filename)
 			if err != nil {
@@ -293,6 +313,7 @@ func main() {
 			}
 			defer fhFirData.Close()
 			h := md5.New()
+			log.Println("io.Copy(h, fhFirData)---")
 			if _, err := io.Copy(h, fhFirData); err != nil {
 				upgradeFirmwareError(w)
 			}
@@ -301,9 +322,14 @@ func main() {
 				upgradeFirmwareError(w)
 			}
 
-			firMd5 := strings.TrimSpace(hex.EncodeToString(h.Sum([]byte(""))))
+			fir2Md5 := strings.TrimSpace(hex.EncodeToString(h.Sum([]byte(""))))
 			md5Str := strings.Split(string(md5Data), " ")[0]
-			if firMd5 == md5Str {
+
+			log.Println("firMd5-------", fir2Md5)
+			log.Println("md5-------", md5Str)
+			log.Println("是否md5匹配-------", fir2Md5 == md5Str)
+
+			if fir2Md5 == md5Str {
 				log.Println("固件升级......")
 				C.avc_web_firmwareUpdate()
 				log.Println("固件升级成功")
@@ -553,13 +579,13 @@ func main() {
 			encContent := C.CString(r.FormValue("enc_content"))
 			defer C.free(unsafe.Pointer(encContent))
 
-			log.Println(encOnoff, "--", r.FormValue("enc_onoff_old"), "--", encOnoffErr)
-			log.Println(encPx, "--", r.FormValue("enc_px_old"), "--", encPxErr)
-			log.Println(encPy, "--", r.FormValue("enc_py_old"), "--", encPyErr)
-			log.Println(encSize, "--", r.FormValue("enc_size_old"), "--", encSizeErr)
-			log.Println(encPosition, "-***********-", r.FormValue("enc_position_old"), "--", encPositionErr)
-			log.Println(encColor, "--", r.FormValue("enc_color_old"), "--", encColorErr)
-			log.Println(encContent, "--", r.FormValue("enc_content_old"))
+			log.Println(encOnoff, "-显示、隐藏-", r.FormValue("enc_onoff_old"), "--", encOnoffErr)
+			log.Println(encPx, "-px-", r.FormValue("enc_px_old"), "--", encPxErr)
+			log.Println(encPy, "-py-", r.FormValue("enc_py_old"), "--", encPyErr)
+			log.Println(encSize, "-size-", r.FormValue("enc_size_old"), "--", encSizeErr)
+			log.Println(encPosition, "-*****position******-", r.FormValue("enc_position_old"), "--", encPositionErr)
+			log.Println(encColor, "-color-", r.FormValue("enc_color_old"), "--", encColorErr)
+			log.Println(encContent, "-content-", r.FormValue("enc_content_old"))
 			log.Println("-----------------------------------------------")
 			log.Println("-----------------------------------------------")
 			log.Println("-----------------------------------------------")
@@ -639,15 +665,16 @@ func main() {
 			})
 		})
 		r.Get("/audio", func(w http.ResponseWriter, r *http.Request) {
-			checkSignin(w, r)
-			var soundGain, macGain, mute, volume, encType, aacType, aacBitRate, aacSampleRate, aacEncapType C.int
+			log.Println("enter audio----------------------------------------")
+			log.Println("enter audio----------------------------------------")
+			var soundGain, macGain, isMute, volume, encType, aacType, aacBitRate, aacSampleRate, aacEncapType C.int
 			if _, err := C.avc_web_audioInGainGet(C.int(0), &soundGain); err != nil {
 				log.Println("get audio sound gain  error:", err.Error())
 			}
 			if _, err := C.avc_web_audioInGainGet(C.int(1), &macGain); err != nil {
 				log.Println("get audio mac gain  error:", err.Error())
 			}
-			if _, err := C.avc_web_audioOutMuteGet(&mute); err != nil {
+			if _, err := C.avc_web_audioOutMuteGet(&isMute); err != nil {
 				log.Println("get audio out mute  error:", err.Error())
 			}
 			if _, err := C.avc_web_audioOutVolumeGet(&volume); err != nil {
@@ -659,13 +686,18 @@ func main() {
 			if _, err := C.avc_web_audioAacGet(&aacType, &aacBitRate, &aacSampleRate, &aacEncapType); err != nil {
 				log.Println("get audio aacs  error:", err.Error())
 			}
-			log.Println("get mute -----------------------", int(mute))
-			log.Println("get mute -----------------------", int(mute))
-			log.Println("get mute -----------------------", int(mute))
+
+			log.Println("after get audio info --------------------------")
+			log.Println("get aacType -----------------------", aacType)
+			log.Println("get aacType -----------------------", aacType)
+			log.Println("get mute -----------------------", isMute)
+			log.Println("get mute -----------------------", isMute)
+			log.Println("render page------------------------------")
+
 			tpl.Render(w, tpl.CONFIG_AUDIO, &tpl.Msg{
 				AudioSoundGain:     int(soundGain),
 				AudioMacGain:       int(macGain),
-				AudioOutMute:       int(mute),
+				AudioOutMute:       int(isMute),
 				AudioOutVolume:     int(volume),
 				AudioEncodeType:    int(encType),
 				AudioAacType:       int(aacType),
@@ -673,7 +705,6 @@ func main() {
 				AudioAacSampleRate: int(aacSampleRate),
 				AudioAacEncapType:  int(aacEncapType),
 				MenuEncodeDecode:   true,
-				MsgSuccess:         "设置成功",
 			})
 		})
 
@@ -719,7 +750,10 @@ func main() {
 		})
 
 		r.Post("/audio", func(w http.ResponseWriter, r *http.Request) {
+
 			checkSignin(w, r)
+			log.Println("enter post audio-----------------------")
+			log.Println("enter post audio-----------------------")
 			soundGainInt, soundGainErr := strconv.Atoi(r.FormValue("sound_gain"))
 			if soundGainErr != nil {
 				log.Println("sound gain error:", soundGainErr.Error())
@@ -740,10 +774,10 @@ func main() {
 			if encErr != nil {
 				log.Println("enc type error:", encErr.Error())
 			}
-			aacTypeInt, aacTypeErr := strconv.Atoi(r.FormValue("aac_type"))
-			if aacTypeErr != nil {
-				log.Println("aac type error:", aacTypeErr.Error())
-			}
+			// aacTypeInt, aacTypeErr := strconv.Atoi(r.FormValue("aac_type"))
+			// if aacTypeErr != nil {
+			// 	log.Println("aac type error:", aacTypeErr.Error())
+			// }
 			aacBitRateInt, aacBitRateErr := strconv.Atoi(r.FormValue("aac_bit_rate"))
 			if aacBitRateErr != nil {
 				log.Println("aac bit rate error:", aacBitRateErr.Error())
@@ -756,7 +790,10 @@ func main() {
 			if aacEncapTypeErr != nil {
 				log.Println("aac encap type error:", aacEncapTypeErr.Error())
 			}
-			if soundGainErr == nil && macGainErr == nil && muteErr == nil && volumeErr == nil && encErr == nil && aacTypeErr == nil && aacBitRateErr == nil && aacSampleRateErr == nil && aacEncapTypeErr == nil {
+
+			log.Println("音频编码为-------------------", encType)
+			log.Println("音频编码为-------------------", r.FormValue("enc_type"))
+			if soundGainErr == nil && macGainErr == nil && muteErr == nil && volumeErr == nil && aacBitRateErr == nil && aacSampleRateErr == nil && aacEncapTypeErr == nil {
 
 				if r.FormValue("mute") != r.FormValue("mute_old") {
 					if _, err := C.avc_web_audioOutMuteSet(C.int(muteInt)); err != nil {
@@ -769,25 +806,30 @@ func main() {
 						log.Println("set audio encode type  error:", err.Error())
 					}
 				}
-				if r.FormValue("aac_type") != r.FormValue("aac_type_old") {
-					if _, err := C.avc_web_audioAacSet(C.int(aacTypeInt), C.int(aacBitRateInt), C.int(aacSampleRateInt), C.int(aacEncapTypeInt)); err != nil {
-						log.Println("set aac params error:", err.Error())
-					}
-				} else {
+
+				if encType == 6 || encType == 7 {
 					if r.FormValue("aac_sample_rate") != r.FormValue("aac_sample_rate_old") || r.FormValue("aac_bit_rate") != r.FormValue("aac_bit_rate_old") || r.FormValue("aac_encap_type") != r.FormValue("aac_encap_type_old") {
-						if _, err := C.avc_web_audioAacSet(C.int(aacTypeInt), C.int(aacBitRateInt), C.int(aacSampleRateInt), C.int(aacEncapTypeInt)); err != nil {
+						if _, err := C.avc_web_audioAacSet(C.int(encType), C.int(aacBitRateInt), C.int(aacSampleRateInt), C.int(aacEncapTypeInt)); err != nil {
 							log.Println("aac_type not change ,set aac params error:", err.Error())
 						}
 					}
 				}
+				// if r.FormValue("aac_type") != r.FormValue("aac_type_old") {
+				// 	if _, err := C.avc_web_audioAacSet(C.int(aacTypeInt), C.int(aacBitRateInt), C.int(aacSampleRateInt), C.int(aacEncapTypeInt)); err != nil {
+				// 		log.Println("set aac params error:", err.Error())
+				// 	}
+				// } else {
 
+				// }
+				log.Println("psot audio end----------------------")
+				log.Println("render pages----------------------")
 				tpl.Render(w, tpl.CONFIG_AUDIO, &tpl.Msg{
-					AudioSoundGain:     soundGainInt,
-					AudioMacGain:       macGainInt,
-					AudioOutMute:       muteInt,
-					AudioOutVolume:     volumeInt,
-					AudioEncodeType:    encType,
-					AudioAacType:       aacTypeInt,
+					AudioSoundGain:  soundGainInt,
+					AudioMacGain:    macGainInt,
+					AudioOutMute:    muteInt,
+					AudioOutVolume:  volumeInt,
+					AudioEncodeType: encType,
+					// AudioAacType:       aacTypeInt,
 					AudioAacBitRate:    aacBitRateInt,
 					AudioAacSampleRate: aacSampleRateInt,
 					AudioAacEncapType:  aacEncapTypeInt,
@@ -796,12 +838,12 @@ func main() {
 				return
 			}
 			tpl.Render(w, tpl.CONFIG_AUDIO, &tpl.Msg{
-				AudioSoundGain:     soundGainInt,
-				AudioMacGain:       macGainInt,
-				AudioOutMute:       muteInt,
-				AudioOutVolume:     volumeInt,
-				AudioEncodeType:    encType,
-				AudioAacType:       aacTypeInt,
+				AudioSoundGain:  soundGainInt,
+				AudioMacGain:    macGainInt,
+				AudioOutMute:    muteInt,
+				AudioOutVolume:  volumeInt,
+				AudioEncodeType: encType,
+				// AudioAacType:       aacTypeInt,
 				AudioAacBitRate:    aacBitRateInt,
 				AudioAacSampleRate: aacSampleRateInt,
 				AudioAacEncapType:  aacEncapTypeInt,
@@ -901,20 +943,35 @@ func main() {
 		r.Get("/check", func(w http.ResponseWriter, r *http.Request) {
 			checkSignin(w, r)
 			// 初始化 环路测试 声音测试
-
-			// var onoffLoop C.int
 			if _, err := C.avc_web_loopGet((*C.char)(unsafe.Pointer(onoffLoop))); err != nil {
 				log.Println("get test loop  error:", err.Error())
 			}
-			// var onoffSound C.int
 			if _, err := C.avc_web_audioLoopGet((*C.char)(unsafe.Pointer(onoffSound))); err != nil {
 				log.Println("get test audio  error:", err.Error())
 			}
-			onoffLoopStr := C.GoString((*C.char)(unsafe.Pointer(onoffLoop)))
-			onoffSoundStr := C.GoString((*C.char)(unsafe.Pointer(onoffSound)))
+			onoffLoopStr2 := C.GoString((*C.char)(unsafe.Pointer(onoffLoop)))
+			onoffSoundStr2 := C.GoString((*C.char)(unsafe.Pointer(onoffSound)))
+
+			var onoffLoopStr, onoffSoundStr C.char
+			if _, err := C.avc_web_loopGet(&onoffLoopStr); err != nil {
+				log.Println("get test loop  error:", err.Error())
+			}
+			if _, err := C.avc_web_audioLoopGet(&onoffSoundStr); err != nil {
+				log.Println("get test audio  error:", err.Error())
+			}
+			log.Println("loop-----------------===", string(onoffLoopStr))
+			log.Println("loop-----------------===", onoffLoopStr)
+			log.Println("loop-----------------===", int(onoffLoopStr))
+			log.Println("sound-----------------===", string(onoffSoundStr))
+			log.Println("sound-----------------===", onoffSoundStr)
+			log.Println("sound-----------------===", int(onoffSoundStr))
+
+			log.Println("v2----")
+			log.Println("loop--------", onoffLoopStr2)
+			log.Println("sound--------", onoffSoundStr2)
 			tpl.Render(w, tpl.CONFIG_CHECK, &tpl.Msg{
-				OnoffLoop:        onoffLoopStr,
-				OnoffSound:       onoffSoundStr,
+				OnoffLoop:        int(onoffLoopStr),
+				OnoffSound:       int(onoffSoundStr),
 				OnoffIp:          0,
 				MenuEncodeDecode: true,
 			})

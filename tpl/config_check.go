@@ -239,6 +239,7 @@ function checkAudioOrLoopBtnValue() {
     //     $('#onoff_sound_btn').val('测试')
     // }
 
+    // 环路测试
     if($('#onoff_loop_old').val() == '0'){
         $('#onoff_loop_old_btn').val('测试')
     }else{

@@ -50,7 +50,7 @@ const CONFIG_AUDIO = `
                 </div> 
 
                 <div class="input" style="height: 30px;">
-                    <span>静音输出:</span>
+                    <span>静音输出:</span> 
                     <input type="radio" name="mute" id="" value="1"> <label class="white">是</label>
                     <input type="radio" name="mute" id="" value="0"> <label class="white">否</label>
                     <input type="text" name="mute_old" id="" value="{{.AudioOutMute}}"  style="display:none;"> 
@@ -59,25 +59,17 @@ const CONFIG_AUDIO = `
 
                 <div class="input" style="height: 30px;">
                     <span>音频编码:</span>
-                    <input type="radio" name="enc_type" id="" value="0"> <label class="white">AAC-LC</label>
-                    <input type="radio" name="enc_type" id="" value="1"> <label class="white">HE-AAC</label>
-                    <input type="radio" name="enc_type" id="" value="2"> <label class="white">G.726</label>
+                    <input type="radio" name="enc_type" id="" value="6"> <label class="white">AAC-LC</label>
+                    <input type="radio" name="enc_type" id="" value="7"> <label class="white">HE-AAC</label>
+                    <input type="radio" name="enc_type" id="" value="5"> <label class="white">G.726</label>
                     <input type="radio" name="enc_type" id="" value="3"> <label class="white">G.729A</label>
-                    <input type="radio" name="enc_type" id="" value="4"> <label class="white">G.711A</label>
-                    <input type="radio" name="enc_type" id="" value="5"> <label class="white">ADPCM</label>
+                    <input type="radio" name="enc_type" id="" value="0"> <label class="white">G.711A</label>
+                    <input type="radio" name="enc_type" id="" value="4"> <label class="white">ADPCM</label>
                     <input type="text" name="enc_type_old" id="" value="{{.AudioEncodeType}}"  style="display:none;"> 
 
                 </div> 
 
-                <div class="input" style="height: 30px;">
-                    <span>AAC类别:</span>
-                    <input type="radio" name="aac_type" id="" value="0"> <label class="white">AAC-LC</label>
-                    <input type="radio" name="aac_type" id="" value="1"> <label class="white">HE-AAC</label>
-                    <input type="text" name="aac_type_old" id="" value="{{.AudioAacType}}"  style="display:none;"> 
-
-                </div> 
-
-                <div class="input acc" style="height: 30px;">
+                <div class="input acc hidden" style="height: 30px;" id="AACLC2HEAAC">
                     <span style="font-size: 14px;" class="aac-type-span"></span>
                        <select id="" name="aac_sample_rate" style="width: 8%">
                             <option value="8000">8K</option>
@@ -135,11 +127,11 @@ $.each($('input[type="radio"][name="enc_type"]'), function (i, val) {
         $(val).attr('checked','checked')
     }
 });
-$.each($('input[type="radio"][name="aac_type"]'), function (i, val) { 
-    if($(val).val() == '{{.AudioAacType}}'){
-        $(val).attr('checked','checked')
-    }
-});
+// $.each($('input[type="radio"][name="aac_type"]'), function (i, val) { 
+//     if($(val).val() == '{{.AudioAacType}}'){
+//         $(val).attr('checked','checked')
+//     }
+// });
 
 setAacType()
 
@@ -210,28 +202,36 @@ function audioMacVolunmAjax(event,lated,old,size) {
 
 
 
-
-$('input[name="aac_type"]').change(function (event) { 
+// 当音频编码选择变化时候触发
+$('input[name="enc_type"]').change(function (event) { 
     setAacType()
 });
 
 // 在页面初始化时候 判断下面三个的内容
 function setAacType() {  
-    let aacType = $('input[name="aac_type"]:checked').val()
+    let aacType = $('input[name="enc_type"]:checked').val()
+
+ 
     var aacLcArray = ['AAC-LC采样率:','AAC-LC码率:','AAC-LC封装:']
     var heAacArray = ['HE-AAC采样率:','HE-AAC码率:','HE-AAC封装:']
     console.log(aacType)
 
-    if(aacType == '0'){
+    if(aacType == '6'){
         // AAC-LC
+        $('#AACLC2HEAAC').removeClass('hidden')
         $.each($('.aac-type-span'), function (i, value) { 
             $(value).text(aacLcArray[i])
         });
-    }else if (aacType == '1'){
+    }else if (aacType == '7'){
+        $('#AACLC2HEAAC').removeClass('hidden')
         $.each($('.aac-type-span'), function (i, value) { 
             $(value).text(heAacArray[i])
         });
+    }else{
+        // 隐藏下面三个
+        $('#AACLC2HEAAC').addClass('hidden')
     }
 }
+
 </script>
 {{end}}`

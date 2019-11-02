@@ -130,10 +130,10 @@ void avc_web_video_sendReceiveInfoGet(float *s_rate, float *s_loss, float *r_rat
 void avc_web_firmwareUpdate();
 
 //v35 需要md5
-// void avc_web_V35Update();
+void avc_web_V35Update();
 
 //mcu  不需要md5比对
-// void avc_web_McuUpdate();
+void avc_web_McuUpdate();
 //md5文件v35Buf
 int avc_checksum_md5(char *md5_linux, char *md5_win);
 

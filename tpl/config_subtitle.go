@@ -74,8 +74,8 @@ const CONFIG_SUBTITLE = `
                 </div>
                 <div class="input">
                     <span>显示/隐藏:</span>
-                    <input type="radio" name="enc_onoff" id="" value="0"> <label class="white">显示</label>
-                    <input type="radio" name="enc_onoff" id="" value="1"> <label class="white">隐藏</label>
+                    <input type="radio" name="enc_onoff" id="" value="0"> <label class="white">隐藏</label>
+                    <input type="radio" name="enc_onoff" id="" value="1"> <label class="white">显示</label>
                     <input type="text" name="enc_onoff_old" id=""  value="{{.SubEncOnoff}}" style="display:none;"> 
 
                 </div>

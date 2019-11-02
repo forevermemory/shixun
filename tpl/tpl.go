@@ -66,8 +66,8 @@ type Msg struct {
 	SendPacket int
 	LossPacket int
 	// 环回自测  声音自测
-	OnoffLoop  string
-	OnoffSound string
+	OnoffLoop  int
+	OnoffSound int
 	OnoffIp    int
 
 	// v35
