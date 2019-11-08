@@ -5,23 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>265 设备</title>
     <link rel="stylesheet" href="../static/css/reset.css">
-    <link rel="stylesheet" href="../static/css/content.css">
+    <link rel="stylesheet" href="../static/css/content_test.css">
     <script type="text/javascript" src="../static/js/jquery.min.js"></script>
     <script type="text/javascript" src="../static/js/slider.js"></script>
     <script type="text/javascript" src="../static/js/jquery.form.js"></script>
 </head>
 
 <body>
-        <div class="progress" style="width: 60%;margin-top: 150px;margin-left: 20%;position: relative; display: none;">
-        <div style="height: 16px;background-color: #dedede;"></div>
-        <div class="bar" style="height: 16px;width:0%;top: 0px;background: #9f7d7d;position: absolute;z-index:10;"></div>
-        <span class="time" style="position: absolute; color: #fff; right: -40px; top: 0px;">0s</span>
-    </div>
-    <div class="uploading" style="display:none;left: 45%; top: 30%; position: absolute; z-index: 100000;">
-        <img src="/static/img/loading.svg" style="width: 70%"/>
-    </div>
-    <div class="upgrate" style="left: 40%; position: absolute; z-index: 100000;"></div>
-</div>
 
 
     <div class="content" id="content">
@@ -127,24 +117,7 @@
                                         <option value="1">32K</option>
                                     </select>
                             </div> 
-                <div class="" id="networkShowSendInfo">
-                        <div class="input" style="padding: 0">
-                            <div class="ping" ><span>发送包:&nbsp;&nbsp;</span><span style="text-align: left;">0</span></div>
-                            <div class="ping" ><span>接受包:&nbsp;&nbsp;</span> <span style="text-align: left;">0</span> </div>
-                        </div>    
-                        <div class="input" style="padding: 0">
-                            <div class="ping"><span>发送包:&nbsp;&nbsp;</span><span style="text-align: left;">0</span></div>
-                            <div class="ping"><span>接受包:&nbsp;&nbsp;</span> <span style="text-align: left;">0</span> </div>
-                        </div>    
-                        <div class="input" style="padding: 0">
-                            <div class="ping"><span>发送包:&nbsp;&nbsp;</span><span style="text-align: left;">0</span></div>
-                            <div class="ping"><span>接受包:&nbsp;&nbsp;</span> <span style="text-align: left;">0</span> </div>
-                        </div>    
-                        <div class="input" style="padding: 0">
-                            <div class="ping"><span>发送包:&nbsp;&nbsp;</span><span style="text-align: left;">0</span></div>
-                            <div class="ping"><span>接受包:&nbsp;&nbsp;</span> <span style="text-align: left;">0</span> </div>
-                        </div>    
-                </div>
+
                             <input type="submit" onClick="removeDisabled()" class="btn ml35" value="修改">
            
 
@@ -153,72 +126,15 @@
                 </div>
             </div>
 
-            <!--  -->
-            <script>
-            </script>
+   
         </div>
     </div>
     <script>
-        if (window.history.replaceState) {
-            window.history.replaceState(null, null, window.location.href);
-        }
-        $('.pure-menu').click(function() {
-            $('.k-config-submenu').css({
-                'display': 'none'
-            })
-            $('.pure-menu').removeClass('active')
-            $('.pure-menu').removeClass('in');
-            $(this).addClass('active')
-            $(this).siblings('ul').css('display', 'block')
-        })
-        $('.pure-menu').each(function() {
-            if ($(this).attr('href') == window.location.pathname) {
-                $(this).addClass('active')
-            }
-        });
-        $('.k-config-submenu li a').each(function() {
-            if ($(this).attr('href') == window.location.pathname) {
-                $('.k-config-submenu li a').removeClass('in');
-                $(this).addClass('in');
-                $(this).parents('.k-config-submenu').css('display', 'block');
-                $(this).parents('.pure-menu-list').siblings('.pure-menu').addClass('active')
-            }
-        });
-        var getDOM = function(id) {
-            return document.getElementById(id)
-        }
-        var sheight = document.documentElement.clientHeight || document.body.clientHeight
-        window.onresize = function() {
-            getDOM('content').style.height = sheight + 'px'
-        }
-        getDOM('content').style.height = sheight + 'px'
+
     </script>
 </body>
 
 </html>
 
 
-    <div class="progress" style="width: 60%;margin-top: 150px;margin-left: 20%;position: relative; display: none;">
-        <div style="height: 16px;background-color: #dedede;"></div>
-        <div class="bar" style="height: 16px;width:0%;top: 0px;background: #9f7d7d;position: absolute;z-index:10;"></div>
-        <span class="time" style="position: absolute; color: #fff; right: -40px; top: 0px;">0s</span>
-    </div>
-    <div class="uploading" style="display:none;left: 45%; top: 30%; position: absolute; z-index: 100000;">
-        <img src="../static/img/loading.svg" style="width: 70%"/>
-    </div>
-    <div class="upgrate" style="left: 40%; position: absolute; z-index: 100000;"></div>
-</div>
-<script>
-    $('.progress').css('display', 'block')
-    var w = 0;
-    var timer = setInterval(function(){
-        w = w + (3* 1)
-        $(".bar").css("width", (w + "%"))
-        $(".time").text((w/3) + "s")
-        if(w > 90) {
-            clearInterval(timer)
-            window.location.href="/upgrade"
-        }
-    },1000)
-    $('.upgrate').prepend('<span style="color:white;">升级成功，请等待设备自动重启</span>')
 </script>

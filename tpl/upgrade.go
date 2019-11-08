@@ -9,7 +9,7 @@ const UPGRADE = `
     <div>
         <h3>软件升级页面</h3>
  
-        <form action="/upgrade" method="post" enctype="multipart/form-data">
+        <form action="/upgrade" method="post" enctype="multipart/form-data" id="upgradeForm">
             <div class="well video">
 
                 <div class="input">
@@ -37,8 +37,7 @@ const UPGRADE = `
 
                
 
-
-                <input type="submit"  class="btn ml35" value="修改">
+                <input type="submit"  class="btn ml35" value="升级" onclick="upgradeComfirm()">
                 <input type="button"  class="btn ml35" value="重置" onclick="resetUploadInput()">
             </div>
         </form>
@@ -49,8 +48,19 @@ const UPGRADE = `
 
 
 <script>
+// 重置
 function resetUploadInput(){
     window.location.href = '/upgrade'
 }
+
+
+// 升级确认弹框
+function upgradeComfirm() {  
+    var r = confirm("您确认进行升级吗!");
+    if (r==true){
+        $('#upgradeForm').submit()
+    }
+}
+
 </script>
 {{end}}`

@@ -120,10 +120,10 @@ void avc_web_boardNetGet(char *ipaddr,char *mask,char *gateway);
 void avc_web_boardNetSet(char *ipaddr,char *mask,char *gateway);
 
 //发送包、接收包、丢包率
-void avc_web_audio_sendReceiveInfoGet(float *s_rate, float *s_loss, float *r_rate, float *r_loss);
-void avc_web_video_sendReceiveInfoGet(float *s_rate, float *s_loss, float *r_rate, float *r_loss);
+// void avc_web_audio_sendReceiveInfoGet(float *s_rate, float *s_loss, float *r_rate, float *r_loss);
+// void avc_web_video_sendReceiveInfoGet(float *s_rate, float *s_loss, float *r_rate, float *r_loss);
 
-
+void avc_web_SendReceiveInfoGet(float *s_vrate, float *s_vloss, float *r_vrate, float *r_vloss, float *s_arate, float *s_aloss, float *r_arate, float *r_aloss);
 
 
 //固件升级  需要md5

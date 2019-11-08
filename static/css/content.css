@@ -18,11 +18,13 @@ body {
     height: 30px;
     width: 25%;
     text-align: center;
+    display: flex;
 }
 .well .input .ping span{
-font-size: 14px;
-width: 120px;
+    font-size: 14px;
+    width: 50%;
 }
+
 
 
 /*test*/

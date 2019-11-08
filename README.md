@@ -1,5 +1,5 @@
 ## 准备及编译步骤
-执行 go generate 打包静态文件
+<!-- 执行 go generate 打包静态文件 -->
 statik -src=static
 ```bash
 sudo dpkg --add-architecture i386

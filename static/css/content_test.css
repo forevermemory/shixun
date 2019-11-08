@@ -1,0 +1,387 @@
+html,
+body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+.hidden{
+    display: none;
+}
+.ml35{
+    margin-left: 35px;
+}
+.w80{
+    width: 80px;
+}
+.ping{
+    float: left;
+    height: 30px;
+    width: 25%;
+    text-align: center;
+}
+.well .input .ping span{
+font-size: 14px;
+width: 120px;
+}
+
+
+/*test*/
+.content {
+    background: url("../img/bgImg.png") no-repeat center center;
+    background-size: cover;
+    /* filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/bgImg.png',sizingMethod='scale'); */
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.content .header a {
+    background: url("../img/signOut.png") no-repeat center center;
+    background-size: cover;
+    /* filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/signOut.png',sizingMethod='scale'); */
+    display: inline-block;
+}
+
+.content .header a,
+.content .header form {
+    float: right;
+}
+
+.content .header a,
+.content .header input {
+    width: 90px;
+    height: 40px;
+    text-align: center;
+    font-size: 18px;
+    text-decoration: none;
+    letter-spacing: 6px;
+    color: rgb(73, 73, 73);
+    margin-top: 35px;
+    cursor: pointer;
+    margin-right: 50px;
+}
+
+.content .header a {
+    line-height: 42px;
+}
+
+.content .header input {
+    background: #fefefe;
+    outline: none;
+    line-height: 34px;
+    border: 0px !important;
+    padding: 0px 0px !important;
+}
+
+.main {
+    width: 100%;
+}
+
+.menu {
+    display: inline-block;
+    *display: inline;
+    float: left;
+    width: 15%;
+}
+
+.menu li {
+    height: 60px;
+    text-align: right;
+    padding-right: 65px;
+    line-height: 30px;
+    padding-bottom: 20px;
+}
+
+.menu a {
+    height: 60px;
+    color: #fff4f4b3;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.menu li.active p {
+    color: red;
+}
+
+.menu a p {
+    display: block;
+    margin-right: -54px;
+    font-size: 12px;
+    margin-right: -40px;
+    color: #fff;
+}
+
+.pure-menu>li>a {
+    text-align: center;
+    color: #fff !important;
+    cursor: pointer;
+}
+
+.on {
+    background: url("/static/img/menuBgImg.png") no-repeat center center;
+    background-size: cover;
+    /* filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/hover.png',sizingMethod='scale'); */
+}
+
+.in {
+    color: #5f4040 !important;
+}
+
+.pure-menu {
+    width: 100%;
+    text-align: center;
+}
+
+.pure-menu-list {
+    background-color: rgb(89, 176, 226);
+    width: 90%;
+    margin-left: 9%;
+}
+
+.pure-menu-list li {
+    text-align: center;
+    border-bottom: 1px solid rgb(3, 30, 107);
+}
+
+#version {
+    /* position: relative; */
+    /* background: url("../img/versionBgImg.png") no-repeat center center; */
+    background-size: cover;
+    /* filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/versionBgImg.png',sizingMethod='scale'); */
+    margin-left: 2.5%;
+    width: 79%;
+    float: left;
+    min-height: 420px;
+    _height: 420px;
+}
+
+#version ul {
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+#version li {
+    float: left;
+    width: 80px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+}
+
+#version li.active a {
+    color: red;
+}
+
+#version li a {
+    text-decoration: none;
+    font-size: 20px;
+    color: #fff4f4b3;
+    text-decoration: none;
+}
+
+h3 {
+    background: #2a3c53;
+    text-align: left;
+    color: #fff;
+    height: 40px;
+    line-height: 40px;
+    font-weight: normal !important;
+    padding-left: 20px;
+    font-size: 22px;
+}
+
+.well {
+    padding-top: 20px;
+    padding-left: 10px;
+    width: 100%;
+}
+
+.well .input {
+    width: 100%;
+    padding: 10px 0px;
+    height: 30px;
+
+}
+
+.well .radio {
+    display: inline-block;
+    width: 47%;
+    padding: 10px 0px;
+    _zoom: 1;
+    *display: inline;
+}
+
+.well .input input[type="text"] {
+    width: 250px;
+}
+
+.well .input input[type="radio"] {
+    margin-right: 10px;
+}
+
+.well .input span,
+.well .radio .note {
+    width: 100px;
+    display: inline-block;
+    text-align: right;
+    color: #fff;
+    height: 30px;
+    line-height: 23px;
+    *display: inline;
+    *zoom: 1;
+    vertical-align: top;
+}
+
+.subtitle .input span {
+    width: 38% !important;
+}
+
+.well .radio input {
+    width: 5%;
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.well .radio .word {
+    color: #fff;
+}
+
+.well .input input,
+.well .input select,
+.well .input label {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 14px;
+    outline: none;
+}
+
+.well .input select {
+    width: 56%;
+}
+
+.well .input input,
+.well .input select {
+    color: #777;
+}
+
+.well .input button {
+    width: 25%;
+    margin-left: 18px;
+    font-size: 14px;
+    outline: none;
+    background: #fefefe;
+    height: 25px;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+.well .input label {
+    color: #fff;
+    padding-top: 4px;
+}
+
+.well .btn {
+    display: inline-block;
+    *display: inline;
+/*    margin-left: 117px;
+    margin-top: 20px;*/
+    width: 8%;
+    height: 30px;
+    background: #fefefe;
+    font-size: 16px;
+    outline: none;
+    margin-bottom: 30px;
+    border: none;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.subtitle .btn {
+    margin-left: 20.5% !important;
+}
+
+.scroll-bar {
+    height: 4px;
+    position: relative;
+    margin-top: 10px;
+    display: inline-block;
+    *display: inline;
+}
+
+.entire-bar {
+    top: -4px;
+    position: absolute;
+    border-bottom: 4px solid #dedede;
+}
+
+.action-bar {
+    top: -4px;
+    position: absolute;
+    border-bottom: 4px solid #4F94CD;
+}
+
+.action-block {
+    width: 6px;
+    top: 4px;
+    height: 8px;
+    cursor: pointer;
+    position: absolute;
+    background: #fff;
+}
+
+#showArea1,
+#showArea2,
+#showArea3 {
+    width: 5% !important;
+    padding: 0px 12px;
+    margin-top: 4px;
+}
+
+#showArea1 {
+    margin-left: 75px;
+}
+
+#showArea2 {
+    margin-left: 145px;
+}
+
+#showArea3 {
+    margin-left: 110px;
+}
+
+#entire-bar1 {
+    width: 64px;
+}
+
+#scroll-bar1 {
+    width: 64px;
+}
+
+#entire-bar2 {
+    width: 128px;
+}
+
+#scroll-bar2 {
+    width: 128px;
+}
+
+#entire-bar3 {
+    width: 100px;
+}
+
+#scroll-bar3 {
+    width: 100px;
+}
+
+.upgrate {
+    text-align: center;
+}
+
+.upgrate span {
+    font-size: 20px;
+}
+
+.white {
+    color: #fff;
+}

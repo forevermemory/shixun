@@ -28,13 +28,14 @@ const CONFIG_VERSION = `
         <form action="" method="post">
             <div class="well video">
                 <div class="input">
-                    <span>硬件版本:</span>
-                    <span style="width: 25%;text-align: left;padding-left:10px;">{{.SW}}</span>
-                </div>
-                <div class="input">
                     <span>软件版本:</span>
                     <span style="width: 25%;text-align: left;padding-left:10px;">{{.HW}}</span>
                 </div>
+                <div class="input">
+                    <span>硬件版本:</span>
+                    <span style="width: 25%;text-align: left;padding-left:10px;">{{.SW}}</span>
+                </div>
+
                 <div class="input">
                     <span>显控版本:</span>
                     <span style="width: 25%;text-align: left;padding-left:10px;">{{.Panel}}</span>

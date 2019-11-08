@@ -29,10 +29,10 @@ const CONFIG_NETWORK = `
             <div class="well video">
                 <div class="input">
                     <span>连接模式：</span>
-                    <input type="radio" name="connect_mode"  value="0" id=""> <label class="white">呼叫模式</label>
                     <input type="radio" name="connect_mode"  value="1" id=""> <label class="white">直通模式</label>
-                    <input type="radio" name="connect_mode_old"  value="0" id="" style="display:none;"> 
-                    <input type="radio" name="connect_mode_old"  value="1" id="" style="display:none;"> 
+                    <input type="radio" name="connect_mode"  value="2" id=""> <label class="white">TS模式</label>
+                    <input type="radio" name="connect_mode"  value="3" id=""> <label class="white">RTP模式</label>
+                    <input type="text" name="connect_mode_old"  value="{{.ConnetMode}}" id="" style="display:none;"> 
                 </div>
                 <div class="input">
                     <span>速率：</span>
@@ -47,20 +47,20 @@ const CONFIG_NETWORK = `
 
                 <div class="hidden" id="networkShowSendInfo">
                         <div class="input" style="padding: 0">
-                            <div class="ping" ><span>发送视频速率:&nbsp;&nbsp;</span><span style="text-align: left;" id="showNetInfo1">0</span></div>
-                            <div class="ping" ><span>发送视频丢包率:&nbsp;&nbsp;</span> <span style="text-align: left;" id="showNetInfo2">0</span> </div>
+                            <div class="ping" ><span>发送视频速率:&nbsp;</span><span style="text-align: left;" id="showNetInfo1">0</span></div>
+                            <div class="ping" ><span>发送视频丢包率:&nbsp;</span> <span style="text-align: left;" id="showNetInfo2">0</span> </div>
                         </div>    
                         <div class="input" style="padding: 0">
-                            <div class="ping"><span>发送音频速率:&nbsp;&nbsp;</span><span style="text-align: left;" id="showNetInfo3">0</span></div>
-                            <div class="ping"><span>发送音频丢包率:&nbsp;&nbsp;</span> <span style="text-align: left;" id="showNetInfo4">0</span> </div>
+                            <div class="ping"><span>发送音频速率:&nbsp;</span><span style="text-align: left;" id="showNetInfo3">0</span></div>
+                            <div class="ping"><span>发送音频丢包率:&nbsp;</span> <span style="text-align: left;" id="showNetInfo4">0</span> </div>
                         </div>    
                         <div class="input" style="padding: 0">
-                            <div class="ping"><span>接受视频速率:&nbsp;&nbsp;</span><span style="text-align: left;" id="showNetInfo5">0</span></div>
-                            <div class="ping"><span>接受视频丢包率:&nbsp;&nbsp;</span> <span style="text-align: left;" id="showNetInfo6">0</span> </div>
+                            <div class="ping"><span>接收视频速率:&nbsp;</span><span style="text-align: left;" id="showNetInfo5">0</span></div>
+                            <div class="ping"><span>接收视频丢包率:&nbsp;</span> <span style="text-align: left;" id="showNetInfo6">0</span> </div>
                         </div>    
                         <div class="input" style="padding: 0">
-                            <div class="ping"><span>接受音频速率:&nbsp;&nbsp;</span><span style="text-align: left;" id="showNetInfo7">0</span></div>
-                            <div class="ping"><span>接受音频丢包率:&nbsp;&nbsp;</span> <span style="text-align: left;" id="showNetInfo8">0</span> </div>
+                            <div class="ping"><span>接收音频速率:&nbsp;</span><span style="text-align: left;" id="showNetInfo7">0</span></div>
+                            <div class="ping"><span>接收音频丢包率:&nbsp;</span> <span style="text-align: left;" id="showNetInfo8">0</span> </div>
                         </div>    
                 </div>
 
@@ -115,14 +115,14 @@ $('#showConnectInfo').click(function (e) {
                 url: "/config/network_data_info",
                 success: function (response) {
                     let res = JSON.parse(response)
-                    $('#showNetInfo1').text(res['SendVideoRate'])
-                    $('#showNetInfo2').text(res['SendVideoLoss'])
-                    $('#showNetInfo3').text(res['SendAudioRate'])
-                    $('#showNetInfo4').text(res['SendAudioLoss'])
-                    $('#showNetInfo5').text(res['RecvideoRate'])
-                    $('#showNetInfo6').text(res['RecVideoLoss'])
-                    $('#showNetInfo7').text(res['RecAudioRate'])
-                    $('#showNetInfo8').text(res['RecAudioLoss'])
+                    $('#showNetInfo1').text(res['SendVideoRate']+'Kbps')
+                    $('#showNetInfo2').text(res['SendVideoLoss']+'%')
+                    $('#showNetInfo3').text(res['SendAudioRate']+'Kbps')
+                    $('#showNetInfo4').text(res['SendAudioLoss']+'%')
+                    $('#showNetInfo5').text(res['RecVideoRate']+'Kbps')
+                    $('#showNetInfo6').text(res['RecVideoLoss']+'%')
+                    $('#showNetInfo7').text(res['RecAudioRate']+'Kbps')
+                    $('#showNetInfo8').text(res['RecAudioLoss']+'%')
                 }
             });
         }, 1000);
@@ -147,11 +147,8 @@ $.each($('input[type="radio"][name="connect_mode"]'), function (i, val) {
         $(val).attr('checked','checked')
     }
 });
-$.each($('input[type="radio"][name="connect_mode_old"]'), function (i, val) { 
-    if($(val).val() == '{{.ConnetMode}}'){
-        $(val).attr('checked','checked')
-    }
-});
+
+
 
 // 更新模式 速率
 function networkModeRateUpdate(event) {  
@@ -176,26 +173,23 @@ function networkModeRateUpdate(event) {
     $(event).addClass('disabled')
     let data = {
         'connect_mode': $('input[name="connect_mode"]:checked').val(),
-        'connect_mode_old' : $('input[name="connect_mode_old"]:checked').val(),
+        'connect_mode_old' : $('input[name="connect_mode_old"]').val(),
         'encode_rate': $('input[name="encode_rate"]').val(),
         'encode_rate_old': $('input[name="encode_rate_old"]').val(),
     }
-    console.log(data)
-    console.log(data)
-    console.log(data)
     $.ajax({
         type: "post",
         url: "/config/network_mode_rate",
         data: data,
         success: function (response) {
-            $('#successMSG').text()
-            $('#errorMSG').text()
+            $('#successMSG').text('')
+            $('#errorMSG').text('')
             $(event).removeClass('disabled')
             let res = JSON.parse(response)
             if(res['Code'] == '0'){
                 // success
                 $('#successMSG').text(res['MsgSuccess'])
-                $('input[name="connect_mode_old"][value="'+$('input[name="connect_mode"]:checked').val()+'"]').prop('checked','checked')
+                $('input[name="connect_mode_old"]').val($('input[name="connect_mode"]:checked').val())
                 $('input[name="encode_rate_old"]').val($('input[name="encode_rate"]').val())
             }else{
                 $('#errorMSG').text(res['MsgError'])
@@ -264,6 +258,38 @@ function networkIPGatewayNetmaskUpdate(event) {
     });
 }
 
+
+
+// 连接模式变化自动更新
+$('input[name="connect_mode"]').change(function (e) { 
+    let connect_mode = $('input[name="connect_mode"]:checked').val()
+    console.log(connect_mode)
+    let data = {
+        'connect_mode': connect_mode,
+        'connect_mode_old' : $('input[name="connect_mode_old"]').val(),
+    }
+    $.ajax({
+        type: "post",
+        url: "/config/network_mode_rate",
+        data: data,
+        success: function (response) {
+            $('#successMSG').text('')
+            $('#errorMSG').text('')
+            $(event).removeClass('disabled')
+            let res = JSON.parse(response)
+            if(res['Code'] == '0'){
+                // success
+                $('#successMSG').text(res['MsgSuccess'])
+                $('input[name="connect_mode_old"]').val($('input[name="connect_mode"]:checked').val())
+            }else{
+                $('#errorMSG').text(res['MsgError'])
+            }
+        },error: function () {
+            $(event).removeClass('disabled')
+            $('#errorMSG').text('服务端错误')
+        }
+    });
+});
 
 </script>
 {{end}}`

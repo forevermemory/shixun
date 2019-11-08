@@ -13,13 +13,11 @@ const V35 = `
                     <span>V35通道:</span>
                     <input type="radio" name="v35_channel" id="" value="0"> <label class="white">上通道</label>
                     <input type="radio" name="v35_channel" id="" value="1"> <label class="white">下通道</label>
-                    <input type="text" name="v35_channel_old"  value="{{.V35Channel}}"  style="display:none;"> 
                 </div>
                 <div class="input">
                     <span>V35版本:</span>
                     <input type="radio" name="v35_version" id="" value="0"> <label class="white">干线</label>
                     <input type="radio" name="v35_version" id="" value="1"> <label class="white">动中通</label>
-                    <input type="text" name="v35_version_old"  value="{{.V35Version}}"  style="display:none;"> 
 
                 </div>
                 <!-- 下面两个不接收  只需要修改上面两个 下面两个在修改完之后重新查询一次 -->
@@ -34,53 +32,92 @@ const V35 = `
                     <input type="radio" name="v35_rec_clock" id="" value="1"> <label class="white">下降沿</label>
                 </div>
 
-                <input type="button" onClick="v35Change()" class="btn" value="修改">
             </div>
         </form>
     </div>
 </div>
 <script >
-    // 初始化radio的选择情况
-    $.each($('input[type="radio"][name="v35_channel"]'), function (i, val) { 
-        if($(val).val() == '{{.V35Channel}}'){
-            $(val).attr('checked','checked')
+v35GetInfo()
+// ajax  get   v35_info
+function v35GetInfo(){
+    $.ajax({    
+        type: "get",
+        url: "/v35_info",
+        success: function (response) {
+            emptyAlertMsg()
+            let res = JSON.parse(response)
+            let v35Channel = res['V35Channel']
+            let v35Version = res['V35Version']
+            let v35SendClock = res['V35SendClock']
+            let v35ReceiveClock = res['V35ReceiveClock']
+            // 更新选中的状态
+            $.each($('input[type="radio"][name="v35_channel"]'), function (i, val) { 
+                if($(val).val() == v35Channel){
+                    $(val).attr('checked','checked')
+                }
+            });
+            $.each($('input[type="radio"][name="v35_version"]'), function (i, val) { 
+                if($(val).val() == v35Version){
+                    $(val).attr('checked','checked')
+                }
+            });
+            $.each($('input[type="radio"][name="v35_send_clock"]'), function (i, val) { 
+                if($(val).val() == v35SendClock){
+                    $(val).attr('checked','checked')
+                }
+            });
+            $.each($('input[type="radio"][name="v35_rec_clock"]'), function (i, val) { 
+                if($(val).val() == v35ReceiveClock){
+                    $(val).attr('checked','checked')
+                }
+            });
+        },error: function () {
+            $('#errorMSG').text('服务端错误,获取v35信息失败')
         }
     });
-    $.each($('input[type="radio"][name="v35_version"]'), function (i, val) { 
-        if($(val).val() == '{{.V35Version}}'){
-            $(val).attr('checked','checked')
-        }
-    });
-    $.each($('input[type="radio"][name="v35_send_clock"]'), function (i, val) { 
-        if($(val).val() == '{{.V35SendClock}}'){
-            $(val).attr('checked','checked')
-        }
-    });
-    $.each($('input[type="radio"][name="v35_rec_clock"]'), function (i, val) { 
-        if($(val).val() == '{{.V35ReceiveClock}}'){
-            $(val).attr('checked','checked')
-        }
-    });
-// 提交前检查内容是否合理
-function v35Change() {  
-
-    emptyAlertMsg()
-    let v35Channel = $('input[name="v35_channel"]:checked').val()
-    let v35Version = $('input[name="v35_version"]:checked').val()
-    if (v35Channel == undefined){
-        $('#errorMSG').text('请选择V35通道')
-        return false
-    }
-    if (v35Version == undefined){
-        $('#errorMSG').text('请选择V35版本')
-        return false
-    }
-
-    if(($('input[name="v35_channel_old"]').val() ==v35Channel) && ($('input[name="v35_version_old"]').val() == v35Version)){
-        $('#errorMSG').text('未发生变化,请更改后再提交')
-        return false
-    }
-    $('#v35Form').submit()
 }
+
+// v35通道 修改
+$('input[name="v35_channel"]').change(function (e) { 
+    setV35VersionAndChannel('v35_channel')
+});
+// v35版本修改
+$('input[name="v35_version"]').change(function (e) { 
+    setV35VersionAndChannel('v35_version')
+});
+
+function setV35VersionAndChannel(v35){
+    emptyAlertMsg()
+    var v35_value = $('input[name="'+v35+'"]:checked').val()
+    var data = {}
+    data[v35] = v35_value
+    $.ajax({
+        type: "post",
+        url: "/v35_channel_version",
+        data: data,
+        success: function (response) {
+            var res = JSON.parse(response)
+            if(res['Code'] == '0'){
+                $('#successMSG').text("设置成功")
+                // 更新时钟的选中情况
+                $.each($('input[type="radio"][name="v35_send_clock"]'), function (i, val) { 
+                    if($(val).val() == res['sendClock']){
+                        $(val).attr('checked','checked')
+                    }
+                });
+                $.each($('input[type="radio"][name="v35_rec_clock"]'), function (i, val) { 
+                    if($(val).val() == res['receiveClock']){
+                        $(val).attr('checked','checked')
+                    }
+                });
+
+            }
+        },error: function () {
+            $('#errorMSG').text('服务端错误')
+        }
+    });
+}
+
+
 </script>
 {{end}}`

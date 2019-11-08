@@ -49,7 +49,7 @@ const CONFIG_CHECK = `
                     <span>ping测试:</span>
                     <input type="text" name="ip" id="" value=""  style="width: 25%"> 
                     <input type="text" name="ip_off"  value="{{.OnoffIp}}"  style="display:none;"> 
-                    <input type="button" onClick="checkPing(this)" class="btn" value="测试">
+                    <input type="button" onClick="checkPing(this)" class="btn" value="测试" style="margin-left:6px;">
                 </div>
                 <div class="input">
                     <div class="ping"><span>发送包:&nbsp;&nbsp;</span><span style="text-align: left;" id="sendIp">0</span></div>

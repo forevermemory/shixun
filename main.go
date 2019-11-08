@@ -216,6 +216,19 @@ func main() {
 		var mcus bool = false
 		// 先存两个不需要md校验的 mcu
 		if mcufErr1 == nil && mcufErr2 == nil {
+			// mcu文件名要完全匹配
+			log.Println("mcu1 name-------", mcuf1.Filename)
+			log.Println("muc2 name-------", mcuf2.Filename)
+
+			var mcuNames = map[string]interface{}{"DZT_H2.57A.bin": "1", "DZT_H2.57B.bin": "1"}
+			if mcuNames[mcuf1.Filename] != "1" || mcuNames[mcuf2.Filename] != "1" {
+				tpl.Render(w, tpl.UPGRADE, &tpl.Msg{
+					MemuUpgrade: true,
+					MsgError:    "mcu固件文件名不匹配,请正确上传",
+				})
+				return
+			}
+			log.Println("save mcus----")
 			mcus = true
 			f, _ := os.OpenFile("/tmp/"+mcuf1.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 			io.Copy(f, mcuFirmware1)
@@ -223,7 +236,7 @@ func main() {
 			f2, _ := os.OpenFile("/tmp/"+mcuf2.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 			io.Copy(f2, mcuFirmware2)
 			f2.Close()
-			// 直接调用升级的api
+			// 调用mcu升级的api
 			log.Println("开始升级mcu")
 			C.avc_web_McuUpdate()
 			log.Println("升级mcu成功")
@@ -246,6 +259,15 @@ func main() {
 			return
 		}
 		if md5Err == nil {
+			log.Println("md5 name-------", md5file.Filename)
+			var md5Name = map[string]interface{}{"md5checksum.txt": "1"}
+			if md5Name[md5file.Filename] != "1" {
+				tpl.Render(w, tpl.UPGRADE, &tpl.Msg{
+					MemuUpgrade: true,
+					MsgError:    "md5文件名不匹配,请正确上传",
+				})
+				return
+			}
 			log.Println("md5保存中。。。")
 			f3, _ := os.OpenFile("/tmp/"+md5file.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 			io.Copy(f3, fileMD5)
@@ -257,6 +279,16 @@ func main() {
 		// v35和系统固件
 		log.Println("v35fErr----", v35fErr)
 		if v35fErr == nil {
+			log.Println("v35 name-------", v35f.Filename)
+			var v35Name = map[string]interface{}{"v35file": "1"}
+			if v35Name[v35f.Filename] != "1" {
+				tpl.Render(w, tpl.UPGRADE, &tpl.Msg{
+					MemuUpgrade: true,
+					MsgError:    "v35文件名不匹配,请正确上传",
+				})
+				return
+			}
+
 			log.Println("v35保存中。。。")
 			f4, _ := os.OpenFile("/tmp/"+v35f.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 			io.Copy(f4, v35Firmware)
@@ -265,7 +297,7 @@ func main() {
 
 			// 读取文件 和md5 进行校验
 			// TODO
-			log.Println("打开v35")
+			log.Println("read ---- v35")
 			v35fFirData, err := os.Open("/tmp/" + v35f.Filename)
 			if err != nil {
 				upgradeFirmwareError(w)
@@ -276,7 +308,7 @@ func main() {
 			if _, err := io.Copy(h, v35fFirData); err != nil {
 				upgradeFirmwareError(w)
 			}
-			log.Println("read md5")
+			log.Println("read md5---")
 			md5Data, err := ioutil.ReadFile("/tmp/" + md5file.Filename)
 			if err != nil {
 				upgradeFirmwareError(w)
@@ -347,10 +379,21 @@ func main() {
 	// v35
 	r.Get("/v35", func(w http.ResponseWriter, r *http.Request) {
 		checkSignin(w, r)
+		log.Println("进入v35get----不查询数据")
+		tpl.Render(w, tpl.V35, &tpl.Msg{
+			V35Channel:      66,
+			V35Version:      66,
+			V35SendClock:    66,
+			V35ReceiveClock: 66,
+			MenuV35:         true,
+		})
+	})
+	// v35查询比较慢  这里用ajax拿对应数据
+	r.Get("/v35_info", func(w http.ResponseWriter, r *http.Request) {
 		var v35Channel, v35Version, v35SendClock, v35ReceiveClock C.int
-		log.Println("进入v35get")
-		log.Println("进入v35get")
-		log.Println("进入v35get")
+		log.Println("进入v35get----ajax查询")
+		log.Println("进入v35get----ajax查询")
+		log.Println("进入v35get----ajax查询")
 		if _, err := C.avc_web_V35ChnGet(&v35Channel); err != nil {
 			log.Println("get v35 channel  error:", err.Error())
 		}
@@ -363,18 +406,18 @@ func main() {
 		if _, err := C.avc_web_v35RxClkGet(&v35ReceiveClock); err != nil {
 			log.Println("get v35 rec clock  error:", err.Error())
 		}
-		log.Println("after v35")
+		log.Println("end v35----ajax查询")
 		log.Println(v35Channel, "--", v35Version, "-", v35SendClock, "-", v35ReceiveClock)
 
-		tpl.Render(w, tpl.V35, &tpl.Msg{
+		v35Data, _ := json.Marshal(tpl.Msg{
 			V35Channel:      int(v35Channel),
 			V35Version:      int(v35Version),
 			V35SendClock:    int(v35SendClock),
 			V35ReceiveClock: int(v35ReceiveClock),
-			MenuV35:         true,
 		})
+		w.Write(v35Data)
 	})
-	r.Post("/v35", func(w http.ResponseWriter, r *http.Request) {
+	r.Post("/v35_channel_version", func(w http.ResponseWriter, r *http.Request) {
 		checkSignin(w, r)
 		// 这里数据类型可能存在问题
 		v35ChannelInt, v35ChannelErr := strconv.Atoi(r.FormValue("v35_channel"))
@@ -385,36 +428,31 @@ func main() {
 		if v35VersionErr != nil {
 			log.Println("get post v35 version error:", v35VersionErr.Error())
 		}
-		if v35ChannelErr == nil && v35VersionErr == nil {
-			// 设置channel和version
-			if r.FormValue("v35_channel") != r.FormValue("v35_channel_old") {
-				if _, err := C.avc_web_V35ChnSet(C.int(v35ChannelInt)); err != nil {
-					log.Println("set v35 channel  error:", err.Error())
-				}
-			}
-			if r.FormValue("v35_version") != r.FormValue("v35_version_old") {
-				if _, err := C.avc_web_V35VerSet(C.int(v35VersionInt)); err != nil {
-					log.Println("set v35 version  error:", err.Error())
-				}
-			}
-			// 重新查询新的 send 和 rec clock
-			var v35SendClock, v35ReceiveClock C.int
-			if _, err := C.avc_web_v35TxClkGet(&v35SendClock); err != nil {
-				log.Println("after update  get v35 send clock  error:", err.Error())
-			}
-			if _, err := C.avc_web_v35RxClkGet(&v35ReceiveClock); err != nil {
-				log.Println("after update get v35 rec clock  error:", err.Error())
-			}
-			tpl.Render(w, tpl.V35, &tpl.Msg{
-				MsgSuccess:      "设置成功",
-				V35Channel:      int(v35ChannelInt),
-				V35Version:      int(v35VersionInt),
-				V35SendClock:    int(v35SendClock),
-				V35ReceiveClock: int(v35ReceiveClock),
-				MenuV35:         true,
-			})
-			return
+
+		if v35ChannelErr == nil {
+			log.Println("start set v35 channel -- ")
+			C.avc_web_V35ChnSet(C.int(v35ChannelInt))
+			log.Println("end set v35 channel -- ")
+
 		}
+		if v35VersionErr == nil {
+			log.Println("start set v35 ver -- ")
+			C.avc_web_V35VerSet(C.int(v35VersionInt))
+			log.Println("end set v35 channel -- ")
+		}
+
+		// 重新查询新的 send 和 rec clock
+		var v35SendClock, v35ReceiveClock C.int
+		if _, err := C.avc_web_v35TxClkGet(&v35SendClock); err != nil {
+			log.Println("after update  get v35 send clock  error:", err.Error())
+		}
+		if _, err := C.avc_web_v35RxClkGet(&v35ReceiveClock); err != nil {
+			log.Println("after update get v35 rec clock  error:", err.Error())
+		}
+
+		var newV35Clock = map[string]interface{}{"Code": "0", "sendClock": int(v35SendClock), "receiveClock": int(v35ReceiveClock)}
+		res, _ := json.Marshal(newV35Clock)
+		w.Write(res)
 	})
 	// config start
 	r.Route("/config", func(r chi.Router) {
@@ -881,13 +919,10 @@ func main() {
 		})
 		// network 打印
 		r.Get("/network_data_info", func(w http.ResponseWriter, r *http.Request) {
-			// void avc_web_audio_sendReceiveInfoGet(float *s_rate, float *s_loss, float *r_rate, float *r_loss);
-			// void avc_web_video_sendReceiveInfoGet(float *s_rate, float *s_loss, float *r_rate, float *r_loss);
-			var sendVR, sendVl, sendAr, sendAl, recVR, recVl, revAr, revAl C.float
-			C.avc_web_audio_sendReceiveInfoGet(&sendAr, &sendAl, &revAr, &revAl)
-			C.avc_web_video_sendReceiveInfoGet(&sendVR, &sendVl, &recVR, &recVl)
-			// v := PingStat{int(RecvPacket), int(SendPacket), int(LossPacket)}
-
+			var sendVR, sendVl, sendAr, sendAl, recVR, recVl, recAr, recAl C.float
+			C.avc_web_SendReceiveInfoGet(&sendVR, &sendVl, &recVR, &recVl, &sendAr, &sendAl, &recAr, &recAl)
+			// C.avc_web_audio_sendReceiveInfoGet(&sendAr, &sendAl, &revAr, &revAl)
+			// C.avc_web_video_sendReceiveInfoGet(&sendVR, &sendVl, &recVR, &recVl)
 			data, _ := json.Marshal(NetworkConnInfo{
 				float32(sendVR),
 				float32(sendVl),
@@ -895,34 +930,55 @@ func main() {
 				float32(sendAl),
 				float32(recVR),
 				float32(recVl),
-				float32(revAr),
-				float32(revAl),
+				float32(recAr),
+				float32(recAl),
 			})
 			w.Write(data)
 
 		})
 
+		// 		SendVideoRate float32
+		// SendVideoLoss float32
+		// SendAudioRate float32
+		// SendAudioLoss float32
+		// RecVideoRate  float32
+		// RecVideoLoss  float32
+		// RecAudioRate  float32
+		// RecAudioLoss  float32
+
 		r.Post("/network_mode_rate", func(w http.ResponseWriter, r *http.Request) {
-			// connetModeInt, connetModeErr := strconv.Atoi(r.FormValue("connect_mode"))
+			log.Println("update network_mode or rate --------------------------------")
+			log.Println("mode--------------------", r.FormValue("connect_mode"))
+			log.Println("mode-old-------------------", r.FormValue("connect_mode_old"))
+			log.Println("rate--------------------", r.FormValue("encode_rate"))
+			log.Println("rate-old-------------------", r.FormValue("encode_rate_old"))
+
+			connetModeInt, connetModeErr := strconv.Atoi(r.FormValue("connect_mode"))
 			videoEncodeRateInt, videoEncodeRateErr := strconv.Atoi(r.FormValue("encode_rate"))
-			// if connetModeErr == nil && videoEncodeRateErr == nil {
-			// 这里先不处理 connetModeInt
-			if videoEncodeRateErr == nil {
-				// if r.FormValue("connect_mode") != r.FormValue("connect_mode_old") {
-				// 	if _, err := C.avc_web_ConnetModeSet(C.int(connetModeInt)); err != nil {
-				// 		log.Println("set connect mode error:", err.Error())
-				// 	}
-				// }
+			if connetModeErr == nil && videoEncodeRateErr == nil {
+				// 这里先不处理 connetModeInt
+				// if videoEncodeRateErr == nil {
+				if r.FormValue("connect_mode") != r.FormValue("connect_mode_old") {
+					log.Println("mode---not equal---avc_web_ConnetModeSet")
+					if _, err := C.avc_web_ConnetModeSet(C.int(connetModeInt)); err != nil {
+						log.Println("set connect mode error:", err.Error())
+					}
+					log.Println("mode set ok")
+				}
 				if r.FormValue("encode_rate") != r.FormValue("encode_rate_old") {
+					log.Println("rate---not equal---avc_web_videoEncodeRateSet")
 					if _, err := C.avc_web_videoEncodeRateSet(C.int(videoEncodeRateInt)); err != nil {
 						log.Println("set encode rate error:", err.Error())
 					}
+					log.Println("rate set ok")
+
 				}
 				jsonOk(w)
 			}
 			jsonError(w)
 
 		})
+
 		r.Post("/network_ip_netmask_gateway", func(w http.ResponseWriter, r *http.Request) {
 			if len(r.FormValue("ipaddr")) != 0 && len(r.FormValue("netmask")) != 0 && len(r.FormValue("gateway")) != 0 {
 				ipaddr := C.CString(r.FormValue("ipaddr"))
