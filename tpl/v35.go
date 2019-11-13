@@ -14,10 +14,15 @@ const V35 = `
                     <input type="radio" name="v35_channel" id="" value="0"> <label class="white">上通道</label>
                     <input type="radio" name="v35_channel" id="" value="1"> <label class="white">下通道</label>
                 </div>
-                <div class="input">
+                <div class="input" id="normalMode">
                     <span>V35版本:</span>
-                    <input type="radio" name="v35_version" id="" value="0"> <label class="white">干线</label>
+                    <input type="radio" name="v35_version" id="" value="0"> <label class="white">干&nbsp;&nbsp;&nbsp;&nbsp;线</label>
                     <input type="radio" name="v35_version" id="" value="1"> <label class="white">动中通</label>
+
+                </div>
+                <div class="input hidden" id="TSMode">
+                    <span>V35版本:</span>
+                    <input type="radio"  id="" checked="checked"> <label class="white">TS模式</label>
 
                 </div>
                 <!-- 下面两个不接收  只需要修改上面两个 下面两个在修改完之后重新查询一次 -->
@@ -45,11 +50,17 @@ function v35GetInfo(){
         url: "/v35_info",
         success: function (response) {
             emptyAlertMsg()
-            let res = JSON.parse(response)
-            let v35Channel = res['V35Channel']
-            let v35Version = res['V35Version']
-            let v35SendClock = res['V35SendClock']
-            let v35ReceiveClock = res['V35ReceiveClock']
+            var res = JSON.parse(response)
+            var v35Channel = res['V35Channel']
+            var v35Version = res['V35Version']
+            var v35SendClock = res['V35SendClock']
+            var v35ReceiveClock = res['V35ReceiveClock']
+            var connetMode = res['ConnetMode']
+
+            if (connetMode == '1'){
+                $('#TSMode').removeClass('hidden')
+                $('#normalMode').addClass('hidden')
+            }
             // 更新选中的状态
             $.each($('input[type="radio"][name="v35_channel"]'), function (i, val) { 
                 if($(val).val() == v35Channel){

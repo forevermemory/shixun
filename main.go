@@ -214,6 +214,11 @@ func main() {
 			return
 		}
 		var mcus bool = false
+		var isSuccess = map[string]bool{
+			"mcu":  false,
+			"v35":  false,
+			"file": false,
+		}
 		// 先存两个不需要md校验的 mcu
 		if mcufErr1 == nil && mcufErr2 == nil {
 			// mcu文件名要完全匹配
@@ -239,6 +244,7 @@ func main() {
 			// 调用mcu升级的api
 			log.Println("开始升级mcu")
 			C.avc_web_McuUpdate()
+			isSuccess["muc"] = true
 			log.Println("升级mcu成功")
 		}
 		// 有没有md5 没有直接返回错误
@@ -322,6 +328,7 @@ func main() {
 			if firMd5 == md5Str {
 				log.Println("升级 v35 .........")
 				C.avc_web_V35Update()
+				isSuccess["v35"] = true
 				log.Println("升级 v35 成功")
 
 			}
@@ -331,21 +338,22 @@ func main() {
 
 		log.Println("系统固件err", fhErr)
 		if fhErr == nil {
+			log.Println("upload system file name---", fh.Filename)
 			log.Println("save 系统固件...")
-			f5, _ := os.OpenFile("/tmp/"+fh.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+			f5, _ := os.OpenFile("/tmp/"+"phoenix_hi3559.tar", os.O_WRONLY|os.O_CREATE, 0666)
 			io.Copy(f5, fileFirmware)
 			f5.Close()
 			// 读取系统固件 和md5 进行校验
 			log.Println("save 系统固件ok")
 			log.Println("open 系统固件")
 			// TODO
-			fhFirData, err := os.Open("/tmp/" + fh.Filename)
+			fhFirData, err := os.Open("/tmp/" + "phoenix_hi3559.tar")
 			if err != nil {
 				upgradeFirmwareError(w)
 			}
 			defer fhFirData.Close()
 			h := md5.New()
-			log.Println("io.Copy(h, fhFirData)---")
+			log.Println("new md5---")
 			if _, err := io.Copy(h, fhFirData); err != nil {
 				upgradeFirmwareError(w)
 			}
@@ -364,14 +372,36 @@ func main() {
 			if fir2Md5 == md5Str {
 				log.Println("固件升级......")
 				C.avc_web_firmwareUpdate()
+				isSuccess["file"] = true
+
 				log.Println("固件升级成功")
 			}
 		}
 
-		log.Println("升级成功")
+		// 返回升级结果
+		var resMsg = ""
+		if isSuccess["mcu"] {
+			resMsg += "升级mcu成功,"
+		}
+		if isSuccess["v35"] {
+			resMsg += "升级v35成功,"
+		}
+		if isSuccess["file"] {
+			resMsg += "升级系统固件成功,"
+		}
+		if len(resMsg) == 0 {
+			resMsg = "升级失败,"
+			log.Println(resMsg)
+			tpl.Render(w, tpl.UPGRADE, &tpl.Msg{
+				MemuUpgrade: true,
+				MsgError:    resMsg,
+			})
+			return
+		}
+		log.Println(resMsg)
 		tpl.Render(w, tpl.UPGRADE, &tpl.Msg{
 			MemuUpgrade: true,
-			MsgSuccess:  "升级成功",
+			MsgSuccess:  resMsg,
 		})
 		return
 	})
@@ -390,7 +420,7 @@ func main() {
 	})
 	// v35查询比较慢  这里用ajax拿对应数据
 	r.Get("/v35_info", func(w http.ResponseWriter, r *http.Request) {
-		var v35Channel, v35Version, v35SendClock, v35ReceiveClock C.int
+		var v35Channel, v35Version, v35SendClock, v35ReceiveClock, connetMode C.int
 		log.Println("进入v35get----ajax查询")
 		log.Println("进入v35get----ajax查询")
 		log.Println("进入v35get----ajax查询")
@@ -406,14 +436,19 @@ func main() {
 		if _, err := C.avc_web_v35RxClkGet(&v35ReceiveClock); err != nil {
 			log.Println("get v35 rec clock  error:", err.Error())
 		}
+
+		if _, err := C.avc_web_ConnetModeGet(&connetMode); err != nil {
+			log.Println("get connect mode  error:", err.Error())
+		}
 		log.Println("end v35----ajax查询")
-		log.Println(v35Channel, "--", v35Version, "-", v35SendClock, "-", v35ReceiveClock)
+		log.Println(v35Channel, "--", v35Version, "-", v35SendClock, "-", v35ReceiveClock, "-", connetMode)
 
 		v35Data, _ := json.Marshal(tpl.Msg{
 			V35Channel:      int(v35Channel),
 			V35Version:      int(v35Version),
 			V35SendClock:    int(v35SendClock),
 			V35ReceiveClock: int(v35ReceiveClock),
+			ConnetMode:      int(connetMode),
 		})
 		w.Write(v35Data)
 	})
@@ -949,33 +984,25 @@ func main() {
 		r.Post("/network_mode_rate", func(w http.ResponseWriter, r *http.Request) {
 			log.Println("update network_mode or rate --------------------------------")
 			log.Println("mode--------------------", r.FormValue("connect_mode"))
-			log.Println("mode-old-------------------", r.FormValue("connect_mode_old"))
 			log.Println("rate--------------------", r.FormValue("encode_rate"))
-			log.Println("rate-old-------------------", r.FormValue("encode_rate_old"))
 
 			connetModeInt, connetModeErr := strconv.Atoi(r.FormValue("connect_mode"))
 			videoEncodeRateInt, videoEncodeRateErr := strconv.Atoi(r.FormValue("encode_rate"))
-			if connetModeErr == nil && videoEncodeRateErr == nil {
-				// 这里先不处理 connetModeInt
-				// if videoEncodeRateErr == nil {
-				if r.FormValue("connect_mode") != r.FormValue("connect_mode_old") {
-					log.Println("mode---not equal---avc_web_ConnetModeSet")
-					if _, err := C.avc_web_ConnetModeSet(C.int(connetModeInt)); err != nil {
-						log.Println("set connect mode error:", err.Error())
-					}
-					log.Println("mode set ok")
+			if connetModeErr == nil {
+				log.Println("avc_web_ConnetModeSet")
+				if _, err := C.avc_web_ConnetModeSet(C.int(connetModeInt)); err != nil {
+					log.Println("set connect mode error:", err.Error())
 				}
-				if r.FormValue("encode_rate") != r.FormValue("encode_rate_old") {
-					log.Println("rate---not equal---avc_web_videoEncodeRateSet")
-					if _, err := C.avc_web_videoEncodeRateSet(C.int(videoEncodeRateInt)); err != nil {
-						log.Println("set encode rate error:", err.Error())
-					}
-					log.Println("rate set ok")
-
-				}
-				jsonOk(w)
+				log.Println("mode set ok")
 			}
-			jsonError(w)
+			if videoEncodeRateErr == nil {
+				log.Println("avc_web_videoEncodeRateSet")
+				if _, err := C.avc_web_videoEncodeRateSet(C.int(videoEncodeRateInt)); err != nil {
+					log.Println("set encode rate error:", err.Error())
+				}
+				log.Println("rate set ok")
+			}
+			jsonOk(w)
 
 		})
 

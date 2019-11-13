@@ -32,7 +32,6 @@ const CONFIG_NETWORK = `
                     <input type="radio" name="connect_mode"  value="1" id=""> <label class="white">直通模式</label>
                     <input type="radio" name="connect_mode"  value="2" id=""> <label class="white">TS模式</label>
                     <input type="radio" name="connect_mode"  value="3" id=""> <label class="white">RTP模式</label>
-                    <input type="text" name="connect_mode_old"  value="{{.ConnetMode}}" id="" style="display:none;"> 
                 </div>
                 <div class="input">
                     <span>速率：</span>
@@ -109,7 +108,7 @@ $('#showConnectInfo').click(function (e) {
         $('#networkShowChangeIp').addClass('hidden')
 
         // 开始连续发送请求拿数据
-        timeInter = setInterval(() => {
+        timeInter = setInterval(function() {
             $.ajax({
                 type: "get",
                 url: "/config/network_data_info",
@@ -150,7 +149,7 @@ $.each($('input[type="radio"][name="connect_mode"]'), function (i, val) {
 
 
 
-// 更新模式 速率
+// 更新 速率
 function networkModeRateUpdate(event) {  
     emptyAlertMsg()
 
@@ -172,24 +171,18 @@ function networkModeRateUpdate(event) {
     }
     $(event).addClass('disabled')
     let data = {
-        'connect_mode': $('input[name="connect_mode"]:checked').val(),
-        'connect_mode_old' : $('input[name="connect_mode_old"]').val(),
         'encode_rate': $('input[name="encode_rate"]').val(),
-        'encode_rate_old': $('input[name="encode_rate_old"]').val(),
     }
     $.ajax({
         type: "post",
         url: "/config/network_mode_rate",
         data: data,
         success: function (response) {
-            $('#successMSG').text('')
-            $('#errorMSG').text('')
             $(event).removeClass('disabled')
-            let res = JSON.parse(response)
+            var res = JSON.parse(response)
             if(res['Code'] == '0'){
                 // success
                 $('#successMSG').text(res['MsgSuccess'])
-                $('input[name="connect_mode_old"]').val($('input[name="connect_mode"]:checked').val())
                 $('input[name="encode_rate_old"]').val($('input[name="encode_rate"]').val())
             }else{
                 $('#errorMSG').text(res['MsgError'])
@@ -266,7 +259,6 @@ $('input[name="connect_mode"]').change(function (e) {
     console.log(connect_mode)
     let data = {
         'connect_mode': connect_mode,
-        'connect_mode_old' : $('input[name="connect_mode_old"]').val(),
     }
     $.ajax({
         type: "post",
@@ -280,7 +272,6 @@ $('input[name="connect_mode"]').change(function (e) {
             if(res['Code'] == '0'){
                 // success
                 $('#successMSG').text(res['MsgSuccess'])
-                $('input[name="connect_mode_old"]').val($('input[name="connect_mode"]:checked').val())
             }else{
                 $('#errorMSG').text(res['MsgError'])
             }
