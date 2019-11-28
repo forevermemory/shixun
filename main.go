@@ -22,6 +22,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	_ "shixun600/statik"
 	"shixun600/tpl"
 	"strconv"
@@ -340,14 +341,14 @@ func main() {
 		if fhErr == nil {
 			log.Println("upload system file name---", fh.Filename)
 			log.Println("save 系统固件...")
-			f5, _ := os.OpenFile("/tmp/"+"phoenix_hi3559.tar", os.O_WRONLY|os.O_CREATE, 0666)
+			f5, _ := os.OpenFile("/tmp/"+fh.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 			io.Copy(f5, fileFirmware)
 			f5.Close()
 			// 读取系统固件 和md5 进行校验
 			log.Println("save 系统固件ok")
-			log.Println("open 系统固件")
+
 			// TODO
-			fhFirData, err := os.Open("/tmp/" + "phoenix_hi3559.tar")
+			fhFirData, err := os.Open("/tmp/" + fh.Filename)
 			if err != nil {
 				upgradeFirmwareError(w)
 			}
@@ -370,7 +371,17 @@ func main() {
 			log.Println("是否md5匹配-------", fir2Md5 == md5Str)
 
 			if fir2Md5 == md5Str {
-				log.Println("固件升级......")
+				log.Println("固件升级中......start unzip....")
+				// 解压
+				// var command = "tar -zxvf /tmp/" + fh.Filename + " -C /tmp/"
+				// cmd := exec.Command(command)
+				cmd := exec.Command("tar", "-zxvf", "/tmp/"+fh.Filename, "-C", "/tmp/")
+				out, tarErr := cmd.Output()
+				if tarErr != nil {
+					log.Println("tar  err-----", tarErr)
+				}
+				log.Println("tar ok----", string(out))
+				log.Println("use avc_web_firmwareUpdate-----")
 				C.avc_web_firmwareUpdate()
 				isSuccess["file"] = true
 
